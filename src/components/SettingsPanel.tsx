@@ -13,8 +13,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import type { AnimationConfig } from "@/lib/canvas";
-import { RESOLUTION_PRESETS } from "@/lib/canvas";
+import type { AnimationConfig, FieldMeta } from "@/lib/canvas";
+import { RESOLUTION_PRESETS, FIELD_CONFIG } from "@/lib/canvas";
+
+// Group field configs by section (preserves order)
+const SECTIONS = FIELD_CONFIG.reduce<{ name: string; fields: FieldMeta[] }[]>(
+  (acc, field) => {
+    let section = acc.find((s) => s.name === field.section);
+    if (!section) {
+      section = { name: field.section, fields: [] };
+      acc.push(section);
+    }
+    section.fields.push(field);
+    return acc;
+  },
+  [],
+);
 
 interface SettingsPanelProps {
   config: AnimationConfig;
@@ -65,215 +79,26 @@ export function SettingsPanel({
 
       <ScrollArea className="flex-1">
         <div className="flex flex-col gap-6 p-4">
-          {/* ---------- Text ---------- */}
-          <Section title="Text">
-            <Field label="Target text">
-              <Input
-                value={config.targetText}
-                onChange={(e) => onChange({ targetText: e.target.value })}
-              />
-            </Field>
-
-            <Field label="Font family">
-              <Input
-                value={config.fontFamily}
-                onChange={(e) => onChange({ fontFamily: e.target.value })}
-              />
-            </Field>
-
-            <Field label={`Silhouette size — ${config.fontSize}px`}>
-              <Slider
-                min={100}
-                max={1200}
-                step={10}
-                value={[config.fontSize]}
-                onValueChange={([v]) => onChange({ fontSize: v })}
-              />
-            </Field>
-
-            <Field label={`Letter size — ${config.letterSize}px`}>
-              <Slider
-                min={6}
-                max={40}
-                step={1}
-                value={[config.letterSize]}
-                onValueChange={([v]) => onChange({ letterSize: v })}
-              />
-            </Field>
-          </Section>
+          {SECTIONS.map((section, si) => (
+            <div key={section.name}>
+              {si > 0 && <Separator className="mb-6" />}
+              <Section title={section.name}>
+                {section.fields.map((meta) => (
+                  <ConfigField
+                    key={meta.key}
+                    meta={meta}
+                    config={config}
+                    onChange={onChange}
+                    onFileChange={handleBgImage}
+                  />
+                ))}
+              </Section>
+            </div>
+          ))}
 
           <Separator />
 
-          {/* ---------- Particles ---------- */}
-          <Section title="Particles">
-            <Field
-              label={`Background letters — ${config.totalBackgroundLetters}`}
-            >
-              <Slider
-                min={10}
-                max={500}
-                step={5}
-                value={[config.totalBackgroundLetters]}
-                onValueChange={([v]) => onChange({ totalBackgroundLetters: v })}
-              />
-            </Field>
-
-            <Field label={`Logo letters — ${config.logoLettersCount}`}>
-              <Slider
-                min={10}
-                max={600}
-                step={5}
-                value={[config.logoLettersCount]}
-                onValueChange={([v]) => onChange({ logoLettersCount: v })}
-              />
-            </Field>
-
-            <Field label={`Duplication — ${config.duplicationPercent}%`}>
-              <Slider
-                min={0}
-                max={100}
-                step={1}
-                value={[config.duplicationPercent]}
-                onValueChange={([v]) => onChange({ duplicationPercent: v })}
-              />
-            </Field>
-          </Section>
-
-          <Separator />
-
-          {/* ---------- Physics ---------- */}
-          <Section title="Animation">
-            <Field label={`Speed — ${config.particleSpeed.toFixed(1)}×`}>
-              <Slider
-                min={0.1}
-                max={5}
-                step={0.1}
-                value={[config.particleSpeed]}
-                onValueChange={([v]) => onChange({ particleSpeed: v })}
-              />
-            </Field>
-
-            <Field label={`Jitter — ${config.jitter.toFixed(1)}`}>
-              <Slider
-                min={0}
-                max={5}
-                step={0.1}
-                value={[config.jitter]}
-                onValueChange={([v]) => onChange({ jitter: v })}
-              />
-            </Field>
-
-            <Field label={`Phase duration — ${config.phaseDuration}ms`}>
-              <Slider
-                min={500}
-                max={8000}
-                step={100}
-                value={[config.phaseDuration]}
-                onValueChange={([v]) => onChange({ phaseDuration: v })}
-              />
-            </Field>
-          </Section>
-
-          <Separator />
-
-          {/* ---------- Appearance ---------- */}
-          <Section title="Appearance">
-            <Field label="Text color">
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={config.letterColor}
-                  onChange={(e) => onChange({ letterColor: e.target.value })}
-                  className="h-8 w-10 cursor-pointer rounded border border-border bg-transparent p-0.5"
-                />
-                <span className="text-xs text-muted-foreground">
-                  {config.letterColor}
-                </span>
-              </div>
-            </Field>
-
-            <Field
-              label={`Text opacity — ${Math.round(config.letterColorAlpha * 100)}%`}
-            >
-              <Slider
-                min={0}
-                max={1}
-                step={0.01}
-                value={[config.letterColorAlpha]}
-                onValueChange={([v]) => onChange({ letterColorAlpha: v })}
-              />
-            </Field>
-
-            <Field label="Background color">
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={config.backgroundColor}
-                  onChange={(e) => onChange({ backgroundColor: e.target.value })}
-                  className="h-8 w-10 cursor-pointer rounded border border-border bg-transparent p-0.5"
-                />
-                <span className="text-xs text-muted-foreground">
-                  {config.backgroundColor}
-                </span>
-              </div>
-            </Field>
-
-            <Field
-              label={`Background opacity — ${Math.round(config.backgroundColorAlpha * 100)}%`}
-            >
-              <Slider
-                min={0}
-                max={1}
-                step={0.01}
-                value={[config.backgroundColorAlpha]}
-                onValueChange={([v]) => onChange({ backgroundColorAlpha: v })}
-              />
-            </Field>
-
-            <Field label="Background image">
-              <div className="flex flex-col gap-2">
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleBgImage}
-                  className="text-xs"
-                />
-                {config.backgroundImage && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full text-xs"
-                    onClick={() => onChange({ backgroundImage: null })}
-                  >
-                    Remove image
-                  </Button>
-                )}
-              </div>
-            </Field>
-          </Section>
-
-          <Separator />
-
-          {/* ---------- Word bank ---------- */}
-          <Section title="Word bank">
-            <Field label="Words (comma-separated)">
-              <Input
-                value={config.wordList.join(", ")}
-                onChange={(e) =>
-                  onChange({
-                    wordList: e.target.value
-                      .split(",")
-                      .map((w) => w.trim())
-                      .filter(Boolean),
-                  })
-                }
-              />
-            </Field>
-          </Section>
-
-          <Separator />
-
-          {/* ---------- Export ---------- */}
+          {/* ---------- Export (special, not in FIELD_CONFIG) ---------- */}
           <Section title="Export">
             <Field label="Resolution">
               <Select
@@ -311,6 +136,102 @@ export function SettingsPanel({
       </ScrollArea>
     </aside>
   );
+}
+
+// ---- Generic field renderer driven by FieldMeta ----------------------------
+
+function ConfigField({
+  meta,
+  config,
+  onChange,
+  onFileChange,
+}: {
+  meta: FieldMeta;
+  config: AnimationConfig;
+  onChange: (patch: Partial<AnimationConfig>) => void;
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  switch (meta.type) {
+    case "slider": {
+      const value = config[meta.key] as number;
+      const suffix = meta.format ? ` — ${meta.format(value)}` : ` — ${value}`;
+      return (
+        <Field label={`${meta.label}${suffix}`}>
+          <Slider
+            min={meta.min}
+            max={meta.max}
+            step={meta.step}
+            value={[value]}
+            onValueChange={([v]) => onChange({ [meta.key]: v })}
+          />
+        </Field>
+      );
+    }
+    case "text":
+      return (
+        <Field label={meta.label}>
+          <Input
+            value={config[meta.key] as string}
+            onChange={(e) => onChange({ [meta.key]: e.target.value })}
+          />
+        </Field>
+      );
+    case "color":
+      return (
+        <Field label={meta.label}>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={config[meta.key] as string}
+              onChange={(e) => onChange({ [meta.key]: e.target.value })}
+              className="h-8 w-10 cursor-pointer rounded border border-border bg-transparent p-0.5"
+            />
+            <span className="text-xs text-muted-foreground">
+              {config[meta.key] as string}
+            </span>
+          </div>
+        </Field>
+      );
+    case "file":
+      return (
+        <Field label={meta.label}>
+          <div className="flex flex-col gap-2">
+            <Input
+              type="file"
+              accept={meta.accept}
+              onChange={onFileChange}
+              className="text-xs"
+            />
+            {config[meta.key] && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full text-xs"
+                onClick={() => onChange({ [meta.key]: null })}
+              >
+                Remove image
+              </Button>
+            )}
+          </div>
+        </Field>
+      );
+    case "wordlist":
+      return (
+        <Field label={meta.label}>
+          <Input
+            value={(config[meta.key] as string[]).join(", ")}
+            onChange={(e) =>
+              onChange({
+                [meta.key]: e.target.value
+                  .split(",")
+                  .map((w) => w.trim())
+                  .filter(Boolean),
+              })
+            }
+          />
+        </Field>
+      );
+  }
 }
 
 // ---- tiny helpers -----------------------------------------------------------

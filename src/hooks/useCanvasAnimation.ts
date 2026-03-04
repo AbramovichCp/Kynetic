@@ -60,7 +60,6 @@ export function useCanvasAnimation(
 
       // Hot-update lightweight config changes on every frame
       engine.config.particleSpeed = configRef.current.particleSpeed;
-      engine.config.jitter = configRef.current.jitter;
       engine.config.phaseDuration = configRef.current.phaseDuration;
       engine.config.logoLettersCount = configRef.current.logoLettersCount;
       engine.config.duplicationPercent = configRef.current.duplicationPercent;

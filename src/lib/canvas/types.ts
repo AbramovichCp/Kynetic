@@ -14,7 +14,6 @@ export interface AnimationConfig {
 
   // Physics
   particleSpeed: number; // base speed multiplier
-  jitter: number; // vibration intensity
   phaseDuration: number; // ms per phase
 
   // Appearance
@@ -34,14 +33,13 @@ export interface AnimationConfig {
 
 export const DEFAULT_CONFIG: AnimationConfig = {
   targetText: "KINETIC",
-  fontFamily: "Helvetica",
+  fontFamily: "Anonymous Pro",
   fontSize: 520,
-  letterSize: 15,
+  letterSize: 25,
   totalBackgroundLetters: 130,
   logoLettersCount: 140,
   duplicationPercent: 100,
   particleSpeed: 1,
-  jitter: 0,
   phaseDuration: 2000,
   letterColor: "#ffffff",
   letterColorAlpha: 1,
@@ -95,3 +93,230 @@ export const RESOLUTION_PRESETS: Record<
   "1440p": { width: 2560, height: 1440 },
   "2160p": { width: 3840, height: 2160 },
 };
+
+// ---------- Centralised field metadata ----------
+
+export type FieldType =
+  | "slider"
+  | "text"
+  | "color"
+  | "file"
+  | "select"
+  | "wordlist";
+
+export interface SliderFieldMeta {
+  type: "slider";
+  key: keyof AnimationConfig;
+  label: string;
+  section: string;
+  min: number;
+  max: number;
+  step: number;
+  default: number;
+  /** Format the current value for the label suffix. */
+  format?: (v: number) => string;
+}
+
+export interface TextFieldMeta {
+  type: "text";
+  key: keyof AnimationConfig;
+  label: string;
+  section: string;
+  default: string;
+}
+
+export interface ColorFieldMeta {
+  type: "color";
+  key: keyof AnimationConfig;
+  label: string;
+  section: string;
+  default: string;
+}
+
+export interface FileFieldMeta {
+  type: "file";
+  key: keyof AnimationConfig;
+  label: string;
+  section: string;
+  accept: string;
+}
+
+export interface WordlistFieldMeta {
+  type: "wordlist";
+  key: keyof AnimationConfig;
+  label: string;
+  section: string;
+  default: string[];
+}
+
+export type FieldMeta =
+  | SliderFieldMeta
+  | TextFieldMeta
+  | ColorFieldMeta
+  | FileFieldMeta
+  | WordlistFieldMeta;
+
+/**
+ * Single source of truth for every settings field —
+ * label, min/max, step, default, section, display format.
+ */
+export const FIELD_CONFIG: FieldMeta[] = [
+  // ── Text ───────────────────────────────────────────
+  {
+    type: "text",
+    key: "targetText",
+    label: "Target text",
+    section: "Text",
+    default: "KINETIC",
+  },
+  {
+    type: "text",
+    key: "fontFamily",
+    label: "Font family",
+    section: "Text",
+    default: "Anonymous Pro",
+  },
+  {
+    type: "slider",
+    key: "fontSize",
+    label: "Silhouette size",
+    section: "Text",
+    min: 200,
+    max: 800,
+    step: 10,
+    default: 400,
+    format: (v) => `${v}px`,
+  },
+  {
+    type: "slider",
+    key: "letterSize",
+    label: "Letter size",
+    section: "Text",
+    min: 5,
+    max: 50,
+    step: 1,
+    default: 25,
+    format: (v) => `${v}px`,
+  },
+
+  // ── Particles ──────────────────────────────────────
+  {
+    type: "slider",
+    key: "totalBackgroundLetters",
+    label: "Background letters",
+    section: "Particles",
+    min: 50,
+    max: 1000,
+    step: 5,
+    default: 250,
+  },
+  {
+    type: "slider",
+    key: "logoLettersCount",
+    label: "Logo letters",
+    section: "Particles",
+    min: 10,
+    max: 600,
+    step: 1,
+    default: 200,
+  },
+  {
+    type: "slider",
+    key: "duplicationPercent",
+    label: "Duplication",
+    section: "Particles",
+    min: 0,
+    max: 100,
+    step: 1,
+    default: 100,
+    format: (v) => `${v}%`,
+  },
+
+  // ── Animation ──────────────────────────────────────
+  {
+    type: "slider",
+    key: "particleSpeed",
+    label: "Speed",
+    section: "Animation",
+    min: 0.01,
+    max: 2,
+    step: 0.01,
+    default: 0.5,
+    format: (v) => `${v.toFixed(2)}×`,
+  },
+  {
+    type: "slider",
+    key: "phaseDuration",
+    label: "Phase duration",
+    section: "Animation",
+    min: 500,
+    max: 8000,
+    step: 100,
+    default: 3000,
+    format: (v) => `${v}ms`,
+  },
+
+  // ── Appearance ─────────────────────────────────────
+  {
+    type: "color",
+    key: "letterColor",
+    label: "Text color",
+    section: "Appearance",
+    default: "#ffffff",
+  },
+  {
+    type: "slider",
+    key: "letterColorAlpha",
+    label: "Text opacity",
+    section: "Appearance",
+    min: 0,
+    max: 1,
+    step: 0.01,
+    default: 1,
+    format: (v) => `${Math.round(v * 100)}%`,
+  },
+  {
+    type: "color",
+    key: "backgroundColor",
+    label: "Background color",
+    section: "Appearance",
+    default: "#000000",
+  },
+  {
+    type: "slider",
+    key: "backgroundColorAlpha",
+    label: "Background opacity",
+    section: "Appearance",
+    min: 0,
+    max: 1,
+    step: 0.01,
+    default: 1,
+    format: (v) => `${Math.round(v * 100)}%`,
+  },
+  {
+    type: "file",
+    key: "backgroundImage",
+    label: "Background image",
+    section: "Appearance",
+    accept: "image/*",
+  },
+
+  // ── Word bank ──────────────────────────────────────
+  {
+    type: "wordlist",
+    key: "wordList",
+    label: "Words (comma-separated)",
+    section: "Word bank",
+    default: [
+      "balance",
+      "calm",
+      "gentle",
+      "tactile",
+      "soft",
+      "quiet",
+      "restorative",
+      "sensory",
+      "ritual",
+    ],
+  },
+];

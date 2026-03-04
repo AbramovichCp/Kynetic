@@ -97,7 +97,7 @@ export class ParticleEngine {
 
   /** Called every animation frame. Returns nothing — caller reads state. */
   update(now: number): void {
-    const { phaseDuration, jitter, width, height } = this.config;
+    const { phaseDuration, width, height } = this.config;
 
     // Phase transitions
     if (now - this.phaseStart > phaseDuration) {
@@ -113,12 +113,6 @@ export class ParticleEngine {
     for (const l of this.letters) {
       l.x += l.vx;
       l.y += l.vy;
-
-      // Jitter
-      if (jitter > 0) {
-        l.x += randomRange(-jitter, jitter);
-        l.y += randomRange(-jitter, jitter);
-      }
 
       // Wrap around
       if (l.x < -20) l.x = width + 20;
@@ -142,12 +136,6 @@ export class ParticleEngine {
         const step = (d / 15) * speed;
         l.x += (dx / d) * step;
         l.y += (dy / d) * step;
-      }
-
-      // Jitter while forming
-      if (jitter > 0) {
-        l.x += randomRange(-jitter * 0.5, jitter * 0.5);
-        l.y += randomRange(-jitter * 0.5, jitter * 0.5);
       }
     }
   }
