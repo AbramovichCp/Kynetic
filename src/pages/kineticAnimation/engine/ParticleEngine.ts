@@ -40,6 +40,7 @@ export class ParticleEngine {
 
   phase = 0; // 0–3 cycling
   phaseStart = 0;
+  private lastTime = 0;
 
   private offscreen: OffscreenCanvas | null = null;
 
@@ -60,22 +61,55 @@ export class ParticleEngine {
     this.formingLetters = [];
     this.phase = 0;
     this.phaseStart = performance.now();
+    this.lastTime = 0;
 
-    const { width, height, totalBackgroundLetters, wordList } = this.config;
+    const {
+      width,
+      height,
+      totalBackgroundLetters,
+      wordList,
+      logoLettersCount,
+      duplicationPercent,
+    } = this.config;
 
+    // Background letters
     for (let i = 0; i < totalBackgroundLetters; i++) {
       const word = wordList[Math.floor(Math.random() * wordList.length)];
       const char = word.charAt(Math.floor(Math.random() * word.length));
+      const angle = Math.random() * Math.PI * 2;
       this.letters.push({
         char,
         x: randomRange(0, width),
         y: randomRange(0, height),
-        vx: randomRange(-0.6, 0.6),
-        vy: randomRange(-0.6, 0.6),
+        vx: Math.cos(angle),
+        vy: Math.sin(angle),
       });
     }
 
     this.createSilhouette();
+
+    // Forming letters — created up-front so they drift from the start
+    const effectiveCount = Math.round(
+      (logoLettersCount * duplicationPercent) / 100,
+    );
+    const nLetters = Math.min(effectiveCount, this.silhouettePoints.length);
+
+    for (let i = 0; i < nLetters; i++) {
+      const word = wordList[Math.floor(Math.random() * wordList.length)];
+      const char = word.charAt(Math.floor(Math.random() * word.length));
+      const angle = Math.random() * Math.PI * 2;
+      this.formingLetters.push({
+        char,
+        x: randomRange(0, width),
+        y: randomRange(0, height),
+        vx: Math.cos(angle),
+        vy: Math.sin(angle),
+        startX: 0,
+        startY: 0,
+        tx: 0,
+        ty: 0,
+      });
+    }
   }
 
   /** Update config at runtime without full re-init when possible. */
@@ -86,7 +120,9 @@ export class ParticleEngine {
       next.fontSize !== this.config.fontSize ||
       next.width !== this.config.width ||
       next.height !== this.config.height ||
-      next.totalBackgroundLetters !== this.config.totalBackgroundLetters;
+      next.totalBackgroundLetters !== this.config.totalBackgroundLetters ||
+      next.logoLettersCount !== this.config.logoLettersCount ||
+      next.duplicationPercent !== this.config.duplicationPercent;
 
     this.config = { ...next };
 
@@ -97,7 +133,12 @@ export class ParticleEngine {
 
   /** Called every animation frame. Returns nothing — caller reads state. */
   update(now: number): void {
-    const { phaseDuration, width, height } = this.config;
+    const { phaseDuration, width, height, freeFlightSpeed } = this.config;
+
+    // Delta time in seconds, clamped to avoid huge jumps after tab switches
+    const dt =
+      this.lastTime === 0 ? 0 : Math.min((now - this.lastTime) / 1000, 0.1);
+    this.lastTime = now;
 
     // Phase transitions
     if (now - this.phaseStart > phaseDuration) {
@@ -105,14 +146,15 @@ export class ParticleEngine {
       this.phaseStart = now;
 
       if (this.phase === 1) {
-        this.createFormingLetters();
+        this.assignFormingTargets();
       }
     }
 
-    // Background letters — chaotic drift
+    // Background letters — drift controlled by freeFlightSpeed
+    const bgDrift = freeFlightSpeed * dt;
     for (const l of this.letters) {
-      l.x += l.vx;
-      l.y += l.vy;
+      l.x += l.vx * bgDrift;
+      l.y += l.vy * bgDrift;
 
       // Wrap around
       if (l.x < -20) l.x = width + 20;
@@ -121,20 +163,35 @@ export class ParticleEngine {
       if (l.y > height + 20) l.y = -20;
     }
 
-    // Forming letters — move towards / away from target
-    const speed = this.config.particleSpeed;
-    for (const l of this.formingLetters) {
-      const targetX = this.phase === 1 ? l.tx : l.startX;
-      const targetY = this.phase === 1 ? l.ty : l.startY;
+    if (this.phase === 0 || this.phase === 3) {
+      // Forming letters — free drift
+      const drift = freeFlightSpeed * dt;
+      for (const l of this.formingLetters) {
+        l.x += l.vx * drift;
+        l.y += l.vy * drift;
 
-      const dx = targetX - l.x;
-      const dy = targetY - l.y;
-      const d = Math.sqrt(dx * dx + dy * dy);
+        // Wrap around
+        if (l.x < -20) l.x = width + 20;
+        if (l.x > width + 20) l.x = -20;
+        if (l.y < -20) l.y = height + 20;
+        if (l.y > height + 20) l.y = -20;
+      }
+    } else {
+      // Forming letters — move towards / away from target
+      const speed = this.config.particleSpeed;
+      for (const l of this.formingLetters) {
+        const targetX = this.phase === 1 ? l.tx : l.startX;
+        const targetY = this.phase === 1 ? l.ty : l.startY;
 
-      if (d > 0.5) {
-        const step = (d / 15) * speed;
-        l.x += (dx / d) * step;
-        l.y += (dy / d) * step;
+        const dx = targetX - l.x;
+        const dy = targetY - l.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+
+        if (d > 0.5) {
+          const step = (d / 15) * speed;
+          l.x += (dx / d) * step;
+          l.y += (dy / d) * step;
+        }
       }
     }
   }
@@ -245,30 +302,18 @@ export class ParticleEngine {
     );
   }
 
-  private createFormingLetters(): void {
-    this.formingLetters = [];
-    const { logoLettersCount, duplicationPercent } = this.config;
-
-    const effectiveCount = Math.round(
-      (logoLettersCount * duplicationPercent) / 100,
-    );
-    const nLetters = Math.min(effectiveCount, this.silhouettePoints.length);
-
+  /** Assign silhouette target positions to existing forming letters. */
+  private assignFormingTargets(): void {
+    const nLetters = this.formingLetters.length;
     const points = shuffle(this.silhouettePoints).slice(0, nLetters);
 
     for (let i = 0; i < nLetters; i++) {
-      const pt = points[i];
-      const base =
-        this.letters[Math.floor(Math.random() * this.letters.length)];
-      this.formingLetters.push({
-        char: base.char,
-        x: base.x,
-        y: base.y,
-        startX: base.x,
-        startY: base.y,
-        tx: pt.x,
-        ty: pt.y,
-      });
+      const l = this.formingLetters[i];
+      const pt = points[i] ?? { x: l.x, y: l.y };
+      l.startX = l.x;
+      l.startY = l.y;
+      l.tx = pt.x;
+      l.ty = pt.y;
     }
   }
 }

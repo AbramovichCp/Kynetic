@@ -55,6 +55,7 @@ export function useCanvasAnimation(
 
       engine.config.particleSpeed = configRef.current.particleSpeed;
       engine.config.phaseDuration = configRef.current.phaseDuration;
+      engine.config.freeFlightSpeed = configRef.current.freeFlightSpeed;
       engine.config.logoLettersCount = configRef.current.logoLettersCount;
       engine.config.duplicationPercent = configRef.current.duplicationPercent;
       engine.config.letterColor = configRef.current.letterColor;

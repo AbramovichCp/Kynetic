@@ -14,6 +14,7 @@ export interface AnimationConfig {
 
   // Physics
   particleSpeed: number; // base speed multiplier
+  freeFlightSpeed: number; // forming-letters drift speed (px/s)
   phaseDuration: number; // ms per phase
 
   // Appearance
@@ -40,6 +41,7 @@ export const DEFAULT_CONFIG: AnimationConfig = {
   logoLettersCount: 140,
   duplicationPercent: 100,
   particleSpeed: 1,
+  freeFlightSpeed: 30,
   phaseDuration: 2000,
   letterColor: "#ffffff",
   letterColorAlpha: 1,
@@ -73,6 +75,8 @@ export interface FormingLetter {
   char: string;
   x: number;
   y: number;
+  vx: number;
+  vy: number;
   startX: number;
   startY: number;
   tx: number;
@@ -238,6 +242,17 @@ export const FIELD_CONFIG: FieldMeta[] = [
     step: 0.01,
     default: 0.5,
     format: (v) => `${v.toFixed(2)}×`,
+  },
+  {
+    type: "slider",
+    key: "freeFlightSpeed",
+    label: "Free flight speed",
+    section: "Animation",
+    min: 0,
+    max: 200,
+    step: 1,
+    default: 30,
+    format: (v) => `${v} px/s`,
   },
   {
     type: "slider",

@@ -1,14 +1,14 @@
 import { useCallback, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { AnimationConfig } from "./engine";
-import { DEFAULT_CONFIG } from "./engine";
 import type { ParticleEngine } from "./engine";
 import { CanvasViewport } from "./components/CanvasViewport";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { useVideoExport } from "./hooks/useVideoExport";
+import { useConfigFromUrl } from "./hooks/useConfigFromUrl";
 
 export default function KineticAnimationPage() {
-  const [config, setConfig] = useState<AnimationConfig>(DEFAULT_CONFIG);
+  const { config, setConfig } = useConfigFromUrl();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { isRecording, startExport } = useVideoExport();
 
@@ -19,8 +19,8 @@ export default function KineticAnimationPage() {
   );
 
   const handleConfigChange = useCallback((patch: Partial<AnimationConfig>) => {
-    setConfig((prev) => ({ ...prev, ...patch }));
-  }, []);
+    setConfig(patch);
+  }, [setConfig]);
 
   const handleExport = useCallback(() => {
     const canvas = canvasRefHolder.current?.current;
