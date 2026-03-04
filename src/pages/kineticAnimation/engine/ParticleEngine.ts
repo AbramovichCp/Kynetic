@@ -122,7 +122,8 @@ export class ParticleEngine {
       next.height !== this.config.height ||
       next.totalBackgroundLetters !== this.config.totalBackgroundLetters ||
       next.logoLettersCount !== this.config.logoLettersCount ||
-      next.duplicationPercent !== this.config.duplicationPercent;
+      next.duplicationPercent !== this.config.duplicationPercent ||
+      next.wordList.join(",") !== this.config.wordList.join(",");
 
     this.config = { ...next };
 

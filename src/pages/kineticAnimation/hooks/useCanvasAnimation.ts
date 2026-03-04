@@ -56,8 +56,6 @@ export function useCanvasAnimation(
       engine.config.particleSpeed = configRef.current.particleSpeed;
       engine.config.phaseDuration = configRef.current.phaseDuration;
       engine.config.freeFlightSpeed = configRef.current.freeFlightSpeed;
-      engine.config.logoLettersCount = configRef.current.logoLettersCount;
-      engine.config.duplicationPercent = configRef.current.duplicationPercent;
       engine.config.letterColor = configRef.current.letterColor;
       engine.config.letterColorAlpha = configRef.current.letterColorAlpha;
       engine.config.backgroundColor = configRef.current.backgroundColor;
@@ -88,8 +86,10 @@ export function useCanvasAnimation(
     config.fontFamily,
     config.fontSize,
     config.letterSize,
-    config.totalBackgroundLetters,
-  ]);
+    config.totalBackgroundLetters,    config.logoLettersCount,
+    config.duplicationPercent,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    config.wordList.join(","),  ]);
 
   return { canvasRef, restart, engineRef };
 }
