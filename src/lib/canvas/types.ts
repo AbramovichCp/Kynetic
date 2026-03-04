@@ -182,9 +182,9 @@ export const FIELD_CONFIG: FieldMeta[] = [
     label: "Silhouette size",
     section: "Text",
     min: 200,
-    max: 800,
+    max: 1200,
     step: 10,
-    default: 400,
+    default: 500,
     format: (v) => `${v}px`,
   },
   {
@@ -218,7 +218,7 @@ export const FIELD_CONFIG: FieldMeta[] = [
     min: 10,
     max: 600,
     step: 1,
-    default: 200,
+    default: 250,
   },
   {
     type: "slider",
