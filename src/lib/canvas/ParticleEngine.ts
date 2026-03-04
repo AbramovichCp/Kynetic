@@ -43,6 +43,10 @@ export class ParticleEngine {
 
   private offscreen: OffscreenCanvas | null = null;
 
+  /** Loaded background image element (if any). */
+  bgImage: HTMLImageElement | null = null;
+  private bgImageSrc: string | null = null;
+
   constructor(config: AnimationConfig) {
     this.config = { ...config };
     this.init();
@@ -150,13 +154,33 @@ export class ParticleEngine {
 
   /** Render current state onto provided CanvasRenderingContext2D. */
   draw(ctx: CanvasRenderingContext2D): void {
-    const { width, height, fontFamily, letterSize } = this.config;
+    const {
+      width,
+      height,
+      fontFamily,
+      letterSize,
+      letterColor,
+      letterColorAlpha,
+      backgroundColor,
+      backgroundColorAlpha,
+    } = this.config;
 
     ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = "#fff";
+    // 1) Background image (if loaded)
+    if (this.bgImage && this.bgImage.complete && this.bgImage.naturalWidth > 0) {
+      ctx.drawImage(this.bgImage, 0, 0, width, height);
+    }
+
+    // 2) Background colour overlay
+    ctx.globalAlpha = backgroundColorAlpha;
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, width, height);
+    ctx.globalAlpha = 1;
+
+    // 3) Letters
+    ctx.globalAlpha = letterColorAlpha;
+    ctx.fillStyle = letterColor;
     ctx.font = `${letterSize}px ${fontFamily}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -168,6 +192,22 @@ export class ParticleEngine {
     for (const l of this.formingLetters) {
       ctx.fillText(l.char, l.x, l.y);
     }
+    ctx.globalAlpha = 1;
+  }
+
+  /** Load a new background image from a data-URL (or clear it). */
+  loadBackgroundImage(src: string | null): void {
+    if (src === this.bgImageSrc) return;
+    this.bgImageSrc = src;
+    if (!src) {
+      this.bgImage = null;
+      return;
+    }
+    const img = new Image();
+    img.onload = () => {
+      this.bgImage = img;
+    };
+    img.src = src;
   }
 
   // ---- private --------------------------------------------------------------

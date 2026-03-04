@@ -17,6 +17,13 @@ export interface AnimationConfig {
   jitter: number; // vibration intensity
   phaseDuration: number; // ms per phase
 
+  // Appearance
+  letterColor: string;
+  letterColorAlpha: number; // 0–1
+  backgroundColor: string;
+  backgroundColorAlpha: number; // 0–1
+  backgroundImage: string | null; // data-URL or null
+
   // Word bank
   wordList: string[];
 
@@ -36,6 +43,11 @@ export const DEFAULT_CONFIG: AnimationConfig = {
   particleSpeed: 1,
   jitter: 0,
   phaseDuration: 2000,
+  letterColor: "#ffffff",
+  letterColorAlpha: 1,
+  backgroundColor: "#000000",
+  backgroundColorAlpha: 1,
+  backgroundImage: null,
   wordList: [
     "balance",
     "calm",
@@ -47,8 +59,8 @@ export const DEFAULT_CONFIG: AnimationConfig = {
     "sensory",
     "ritual",
   ],
-  width: 1920,
-  height: 1080,
+  width: 3840,
+  height: 2160,
 };
 
 export interface BackgroundLetter {

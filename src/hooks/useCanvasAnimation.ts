@@ -64,6 +64,16 @@ export function useCanvasAnimation(
       engine.config.phaseDuration = configRef.current.phaseDuration;
       engine.config.logoLettersCount = configRef.current.logoLettersCount;
       engine.config.duplicationPercent = configRef.current.duplicationPercent;
+      engine.config.letterColor = configRef.current.letterColor;
+      engine.config.letterColorAlpha = configRef.current.letterColorAlpha;
+      engine.config.backgroundColor = configRef.current.backgroundColor;
+      engine.config.backgroundColorAlpha = configRef.current.backgroundColorAlpha;
+
+      // Background image — load once when URL changes
+      if (configRef.current.backgroundImage !== engine.config.backgroundImage) {
+        engine.config.backgroundImage = configRef.current.backgroundImage;
+        engine.loadBackgroundImage(configRef.current.backgroundImage);
+      }
 
       engine.update(performance.now());
       engine.draw(ctx);

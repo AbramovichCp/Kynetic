@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +21,8 @@ interface SettingsPanelProps {
   onChange: (patch: Partial<AnimationConfig>) => void;
   onExport: (resolutionKey: string) => void;
   isRecording: boolean;
+  open: boolean;
+  onToggle: () => void;
 }
 
 export function SettingsPanel({
@@ -27,16 +30,35 @@ export function SettingsPanel({
   onChange,
   onExport,
   isRecording,
+  open,
+  onToggle,
 }: SettingsPanelProps) {
   const resolutionKey =
     Object.entries(RESOLUTION_PRESETS).find(
       ([, v]) => v.width === config.width && v.height === config.height,
-    )?.[0] ?? "1080p";
+    )?.[0] ?? "2160p";
+
+  const handleBgImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => onChange({ backgroundImage: reader.result as string });
+    reader.readAsDataURL(file);
+  };
+
+  if (!open) return null;
 
   return (
-    <aside className="flex w-80 shrink-0 flex-col border-l border-border bg-card text-card-foreground">
+    <aside className="flex h-full w-80 shrink-0 flex-col overflow-hidden border-l border-border bg-card text-card-foreground">
       <div className="flex items-center justify-between px-4 py-3">
         <h2 className="text-lg font-semibold tracking-tight">Settings</h2>
+        <button
+          onClick={onToggle}
+          className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+          aria-label="Close settings"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
       </div>
 
       <Separator />
@@ -154,6 +176,84 @@ export function SettingsPanel({
 
           <Separator />
 
+          {/* ---------- Appearance ---------- */}
+          <Section title="Appearance">
+            <Field label="Text color">
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={config.letterColor}
+                  onChange={(e) => onChange({ letterColor: e.target.value })}
+                  className="h-8 w-10 cursor-pointer rounded border border-border bg-transparent p-0.5"
+                />
+                <span className="text-xs text-muted-foreground">
+                  {config.letterColor}
+                </span>
+              </div>
+            </Field>
+
+            <Field
+              label={`Text opacity — ${Math.round(config.letterColorAlpha * 100)}%`}
+            >
+              <Slider
+                min={0}
+                max={1}
+                step={0.01}
+                value={[config.letterColorAlpha]}
+                onValueChange={([v]) => onChange({ letterColorAlpha: v })}
+              />
+            </Field>
+
+            <Field label="Background color">
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={config.backgroundColor}
+                  onChange={(e) => onChange({ backgroundColor: e.target.value })}
+                  className="h-8 w-10 cursor-pointer rounded border border-border bg-transparent p-0.5"
+                />
+                <span className="text-xs text-muted-foreground">
+                  {config.backgroundColor}
+                </span>
+              </div>
+            </Field>
+
+            <Field
+              label={`Background opacity — ${Math.round(config.backgroundColorAlpha * 100)}%`}
+            >
+              <Slider
+                min={0}
+                max={1}
+                step={0.01}
+                value={[config.backgroundColorAlpha]}
+                onValueChange={([v]) => onChange({ backgroundColorAlpha: v })}
+              />
+            </Field>
+
+            <Field label="Background image">
+              <div className="flex flex-col gap-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleBgImage}
+                  className="text-xs"
+                />
+                {config.backgroundImage && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-xs"
+                    onClick={() => onChange({ backgroundImage: null })}
+                  >
+                    Remove image
+                  </Button>
+                )}
+              </div>
+            </Field>
+          </Section>
+
+          <Separator />
+
           {/* ---------- Word bank ---------- */}
           <Section title="Word bank">
             <Field label="Words (comma-separated)">
@@ -218,14 +318,36 @@ export function SettingsPanel({
 function Section({
   title,
   children,
+  defaultOpen = true,
 }: {
   title: string;
   children: React.ReactNode;
+  defaultOpen?: boolean;
 }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="flex flex-col gap-3">
-      <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-      {children}
+    <div className="flex flex-col gap-1">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between py-1 text-sm font-medium text-muted-foreground hover:text-foreground"
+      >
+        {title}
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={`transition-transform ${open ? "rotate-180" : ""}`}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {open && <div className="flex flex-col gap-3 pt-1">{children}</div>}
     </div>
   );
 }
