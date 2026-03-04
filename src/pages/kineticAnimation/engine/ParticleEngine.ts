@@ -1,5 +1,5 @@
 /**
- * ParticleEngine — pure-logic animation system.
+ * ParticleEngine — pure-logic animation system for Kinetic text animation.
  * Operates on typed data; completely decoupled from React.
  */
 
@@ -132,7 +132,6 @@ export class ParticleEngine {
       const d = Math.sqrt(dx * dx + dy * dy);
 
       if (d > 0.5) {
-        // Uniform-speed: all particles converge at similar pace
         const step = (d / 15) * speed;
         l.x += (dx / d) * step;
         l.y += (dy / d) * step;
@@ -207,7 +206,6 @@ export class ParticleEngine {
   private createSilhouette(): void {
     const { width, height, targetText, fontFamily, fontSize } = this.config;
 
-    // Use OffscreenCanvas for pixel sampling
     this.offscreen = new OffscreenCanvas(width, height);
     const ctx = this.offscreen.getContext("2d")!;
     ctx.clearRect(0, 0, width, height);
@@ -228,7 +226,7 @@ export class ParticleEngine {
     const centerY = height / 2;
     const maxRadius = Math.min(width, height) * 0.5;
 
-    const step = 6; // sampling density
+    const step = 6;
     for (let x = 0; x < width; x += step) {
       for (let y = 0; y < height; y += step) {
         const idx = 4 * (y * width + x);
@@ -241,7 +239,6 @@ export class ParticleEngine {
       }
     }
 
-    // Sort by distance to center so we prioritise inner points
     this.silhouettePoints.sort(
       (a, b) =>
         dist(a.x, a.y, centerX, centerY) - dist(b.x, b.y, centerX, centerY),
@@ -257,7 +254,6 @@ export class ParticleEngine {
     );
     const nLetters = Math.min(effectiveCount, this.silhouettePoints.length);
 
-    // Take a shuffled subset of silhouette points (closest first already sorted)
     const points = shuffle(this.silhouettePoints).slice(0, nLetters);
 
     for (let i = 0; i < nLetters; i++) {

@@ -13,8 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import type { AnimationConfig, FieldMeta } from "@/lib/canvas";
-import { RESOLUTION_PRESETS, FIELD_CONFIG } from "@/lib/canvas";
+import type { AnimationConfig, FieldMeta } from "../engine";
+import { RESOLUTION_PRESETS, FIELD_CONFIG } from "../engine";
 
 // Group field configs by section (preserves order)
 const SECTIONS = FIELD_CONFIG.reduce<{ name: string; fields: FieldMeta[] }[]>(
@@ -111,7 +111,6 @@ export function SettingsPanel({
 
           <Separator />
 
-          {/* ---------- Export (special, not in FIELD_CONFIG) ---------- */}
           <Section title="Export">
             <Field label="Resolution">
               <Select

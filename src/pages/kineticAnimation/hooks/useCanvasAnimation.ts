@@ -4,14 +4,12 @@
  */
 
 import { useCallback, useEffect, useRef } from "react";
-import type { AnimationConfig } from "@/lib/canvas";
-import { ParticleEngine } from "@/lib/canvas";
+import type { AnimationConfig } from "../engine";
+import { ParticleEngine } from "../engine";
 
 export interface UseCanvasAnimationReturn {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
-  /** Restart the animation from scratch. */
   restart: () => void;
-  /** Access underlying engine (e.g. for export). */
   engineRef: React.RefObject<ParticleEngine | null>;
 }
 
@@ -22,7 +20,6 @@ export function useCanvasAnimation(
   const engineRef = useRef<ParticleEngine | null>(null);
   const rafRef = useRef<number>(0);
 
-  // Keep latest config in a ref so the loop always reads fresh values
   const configRef = useRef(config);
   configRef.current = config;
 
@@ -40,7 +37,6 @@ export function useCanvasAnimation(
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Create engine once
     if (!engineRef.current) {
       engineRef.current = new ParticleEngine(config);
     } else {
@@ -49,7 +45,6 @@ export function useCanvasAnimation(
 
     const engine = engineRef.current;
 
-    // Resize canvas element to match config
     canvas.width = config.width;
     canvas.height = config.height;
 
@@ -58,7 +53,6 @@ export function useCanvasAnimation(
     const loop = () => {
       if (!running) return;
 
-      // Hot-update lightweight config changes on every frame
       engine.config.particleSpeed = configRef.current.particleSpeed;
       engine.config.phaseDuration = configRef.current.phaseDuration;
       engine.config.logoLettersCount = configRef.current.logoLettersCount;
@@ -69,7 +63,6 @@ export function useCanvasAnimation(
       engine.config.backgroundColorAlpha =
         configRef.current.backgroundColorAlpha;
 
-      // Background image — load once when URL changes
       if (configRef.current.backgroundImage !== engine.config.backgroundImage) {
         engine.config.backgroundImage = configRef.current.backgroundImage;
         engine.loadBackgroundImage(configRef.current.backgroundImage);
@@ -86,7 +79,6 @@ export function useCanvasAnimation(
       running = false;
       cancelAnimationFrame(rafRef.current);
     };
-    // Re-run effect when resolution, text, font or letter count change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     config.width,
