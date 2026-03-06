@@ -15,6 +15,13 @@ const ANIMATIONS = [
     path: "/dots",
     preview: "•••",
   },
+  {
+    title: "LiteraSphere",
+    description:
+      "A rotating 3D sphere composed of floating digits and letters — Matrix digital sphere aesthetic with depth-based opacity.",
+    path: "/litera-sphere",
+    preview: "01A",
+  },
 ];
 
 export default function HomePage() {

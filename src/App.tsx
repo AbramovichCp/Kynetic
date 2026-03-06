@@ -8,6 +8,9 @@ const KineticAnimationPage = lazy(
 const DotAnimationPage = lazy(
   () => import("./pages/dotAnimation/DotAnimationPage"),
 );
+const LiteraSpherePage = lazy(
+  () => import("./pages/literaSphere/LiteraSpherePage"),
+);
 
 export default function App() {
   return (
@@ -22,6 +25,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/kinetic" element={<KineticAnimationPage />} />
         <Route path="/dots" element={<DotAnimationPage />} />
+        <Route path="/litera-sphere" element={<LiteraSpherePage />} />
       </Routes>
     </Suspense>
   );
