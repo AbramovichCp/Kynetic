@@ -11,6 +11,9 @@ const DotAnimationPage = lazy(
 const LiteraSpherePage = lazy(
   () => import("./pages/literaSphere/LiteraSpherePage"),
 );
+const LetterVortexPage = lazy(
+  () => import("./pages/letterVortex/LetterVortexPage"),
+);
 
 export default function App() {
   return (
@@ -26,6 +29,7 @@ export default function App() {
         <Route path="/kinetic" element={<KineticAnimationPage />} />
         <Route path="/dots" element={<DotAnimationPage />} />
         <Route path="/litera-sphere" element={<LiteraSpherePage />} />
+        <Route path="/letter-vortex" element={<LetterVortexPage />} />
       </Routes>
     </Suspense>
   );

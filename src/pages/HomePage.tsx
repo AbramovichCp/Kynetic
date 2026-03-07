@@ -22,6 +22,13 @@ const ANIMATIONS = [
     path: "/litera-sphere",
     preview: "01A",
   },
+  {
+    title: "LetterVortex",
+    description:
+      "Letters fly chaotically around a central axis, then smoothly converge and assemble into a target word. After holding, they scatter and the cycle repeats.",
+    path: "/letter-vortex",
+    preview: "N3",
+  },
 ];
 
 export default function HomePage() {
