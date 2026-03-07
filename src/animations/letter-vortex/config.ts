@@ -1,4 +1,4 @@
-import type { LetterVortexConfig } from './types';
+import type { LetterVortexConfig } from "./types";
 
 /**
  * Single source of truth for every default value used by the LetterVortex
@@ -6,15 +6,15 @@ import type { LetterVortexConfig } from './types';
  */
 export const LETTER_VORTEX_CONFIG: LetterVortexConfig = {
   word: {
-    target: 'N3',
-    fontFamily: 'monospace',
+    target: "N3",
+    fontFamily: "monospace",
     targetFontSize: 300,
     letterHeight: 1.0,
     letterSpacing: 80,
-    color: '#ffffff',
+    color: "#ffffff",
   },
   particles: {
-    sourceChars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+    sourceChars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
     orbitCount: 200,
     gridResolution: 8,
     orbitMinSize: 10,
@@ -36,11 +36,11 @@ export const LETTER_VORTEX_CONFIG: LetterVortexConfig = {
     phases: {
       scatter: {
         duration: 3000,
-        speedCurve: 'easeInOut',
+        speedCurve: "easeInOut",
       },
       assemble: {
         duration: 2500,
-        speedCurve: 'easeOut',
+        speedCurve: "easeOut",
         staggerDelay: 8,
       },
       hold: {
@@ -48,22 +48,22 @@ export const LETTER_VORTEX_CONFIG: LetterVortexConfig = {
       },
       dissolve: {
         duration: 1500,
-        speedCurve: 'easeIn',
+        speedCurve: "easeIn",
       },
     },
     autoPlay: true,
     loop: true,
   },
   export: {
-    defaultQuality: 'high',
+    defaultQuality: "high",
     qualityPresets: {
-      low:    { width: 854,  height: 480,  bitrate: 1_000_000  },
-      medium: { width: 1280, height: 720,  bitrate: 4_000_000  },
-      high:   { width: 1920, height: 1080, bitrate: 8_000_000  },
-      ultra:  { width: 3840, height: 2160, bitrate: 20_000_000 },
+      low: { width: 854, height: 480, bitrate: 1_000_000 },
+      medium: { width: 1280, height: 720, bitrate: 4_000_000 },
+      high: { width: 1920, height: 1080, bitrate: 8_000_000 },
+      ultra: { width: 3840, height: 2160, bitrate: 20_000_000 },
     },
     duration: 18,
     fps: 60,
-    format: 'webm',
+    format: "webm",
   },
 };

@@ -1,4 +1,4 @@
-import type { QualityPreset, LetterVortexConfig } from './types';
+import type { QualityPreset, LetterVortexConfig } from "./types";
 
 /**
  * MediaRecorder-based video exporter for the LetterVortex animation.
@@ -32,15 +32,13 @@ export class VideoExporter {
     const stream = canvas.captureStream(config.export.fps);
 
     const preferredMime =
-      config.export.format === 'webm'
-        ? 'video/webm;codecs=vp9'
-        : 'video/mp4';
+      config.export.format === "webm" ? "video/webm;codecs=vp9" : "video/mp4";
 
     this.chunks = [];
     this.mediaRecorder = new MediaRecorder(stream, {
       mimeType: MediaRecorder.isTypeSupported(preferredMime)
         ? preferredMime
-        : 'video/webm',
+        : "video/webm",
       videoBitsPerSecond: preset.bitrate,
     });
 
@@ -50,7 +48,7 @@ export class VideoExporter {
 
     this.mediaRecorder.onstop = () => {
       const blob = new Blob(this.chunks, {
-        type: this.mediaRecorder?.mimeType ?? 'video/webm',
+        type: this.mediaRecorder?.mimeType ?? "video/webm",
       });
       this.resolveCapture?.(blob);
     };
@@ -61,7 +59,7 @@ export class VideoExporter {
   /** Stop the active recording and return the resulting blob. */
   stopCapture(): Promise<Blob> {
     return new Promise((resolve) => {
-      if (!this.mediaRecorder || this.mediaRecorder.state !== 'recording') {
+      if (!this.mediaRecorder || this.mediaRecorder.state !== "recording") {
         resolve(new Blob());
         return;
       }
@@ -73,7 +71,7 @@ export class VideoExporter {
   /** Trigger a browser download of the given blob. */
   downloadBlob(blob: Blob, filename: string): void {
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = filename;
     document.body.appendChild(a);
@@ -84,7 +82,7 @@ export class VideoExporter {
 
   /** Clean up any active recording. */
   dispose(): void {
-    if (this.mediaRecorder?.state === 'recording') {
+    if (this.mediaRecorder?.state === "recording") {
       this.mediaRecorder.stop();
     }
     this.mediaRecorder = null;

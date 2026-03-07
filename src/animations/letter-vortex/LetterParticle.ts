@@ -5,10 +5,10 @@ import {
   SpriteMaterial,
   Vector3,
   type Camera,
-} from 'three';
-import type { LetterVortexConfig, OrbitConfig, EasingCurve } from './types';
-import { OrbitBehavior } from './OrbitBehavior';
-import { AssembleBehavior } from './AssembleBehavior';
+} from "three";
+import type { LetterVortexConfig, OrbitConfig, EasingCurve } from "./types";
+import { OrbitBehavior } from "./OrbitBehavior";
+import { AssembleBehavior } from "./AssembleBehavior";
 
 /**
  * A single letter entity in the LetterVortex animation.
@@ -118,11 +118,18 @@ export class LetterParticle {
    * @param curve     Easing curve name to apply.
    * @param config    Full config for size interpolation.
    */
-  updateAssemble(progress: number, curve: EasingCurve, config: LetterVortexConfig): void {
+  updateAssemble(
+    progress: number,
+    curve: EasingCurve,
+    config: LetterVortexConfig,
+  ): void {
     if (!this.assembleOrigin || !this.targetPosition) return;
 
     // Account for per-particle stagger
-    const adjusted = Math.max(0, (progress - this.staggerOffset) / (1 - this.staggerOffset));
+    const adjusted = Math.max(
+      0,
+      (progress - this.staggerOffset) / (1 - this.staggerOffset),
+    );
 
     const pos = AssembleBehavior.interpolate(
       this.assembleOrigin,
@@ -220,11 +227,7 @@ export class LetterParticle {
     this.sprite.getWorldPosition(worldPos);
 
     const maxDist = config.orbit.radius.max * 2;
-    const t = MathUtils.clamp(
-      (worldPos.z + maxDist) / (2 * maxDist),
-      0,
-      1,
-    );
+    const t = MathUtils.clamp((worldPos.z + maxDist) / (2 * maxDist), 0, 1);
 
     // opacity: further → more transparent
     const opacity = MathUtils.lerp(
@@ -259,22 +262,25 @@ export class LetterParticle {
   /*  Private — texture rendering                                        */
   /* ==================================================================== */
 
-  private renderTexture(char: string, config: LetterVortexConfig): CanvasTexture {
+  private renderTexture(
+    char: string,
+    config: LetterVortexConfig,
+  ): CanvasTexture {
     const key = `${char}_${config.word.color}_${config.word.fontFamily}`;
     const cached = this.textureCache.get(key);
     if (cached) return cached;
 
     const size = 128;
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = size;
     canvas.height = size;
 
-    const ctx = canvas.getContext('2d')!;
+    const ctx = canvas.getContext("2d")!;
     ctx.clearRect(0, 0, size, size);
     ctx.font = `bold ${size * 0.7}px ${config.word.fontFamily}`;
     ctx.fillStyle = config.word.color;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
     ctx.fillText(char, size / 2, size / 2);
 
     const texture = new CanvasTexture(canvas);

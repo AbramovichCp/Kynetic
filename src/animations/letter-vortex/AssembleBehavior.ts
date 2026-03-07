@@ -1,5 +1,5 @@
-import { Vector3 } from 'three';
-import type { EasingCurve, EasingFn } from './types';
+import { Vector3 } from "three";
+import type { EasingCurve, EasingFn } from "./types";
 
 /**
  * Pure easing / interpolation utilities used during the ASSEMBLE and DISSOLVE
@@ -47,15 +47,15 @@ export class AssembleBehavior {
    */
   static getEasingFn(curve: EasingCurve): EasingFn {
     switch (curve) {
-      case 'linear':
+      case "linear":
         return AssembleBehavior.easeLinear;
-      case 'easeIn':
+      case "easeIn":
         return AssembleBehavior.easeIn;
-      case 'easeOut':
+      case "easeOut":
         return AssembleBehavior.easeOut;
-      case 'easeInOut':
+      case "easeInOut":
         return AssembleBehavior.easeInOut;
-      case 'easeInOutCubic':
+      case "easeInOutCubic":
         return AssembleBehavior.easeInOutCubic;
       default:
         return AssembleBehavior.easeLinear;
@@ -82,7 +82,9 @@ export class AssembleBehavior {
     t: number,
     curve: EasingCurve,
   ): Vector3 {
-    const easedT = AssembleBehavior.getEasingFn(curve)(Math.max(0, Math.min(1, t)));
+    const easedT = AssembleBehavior.getEasingFn(curve)(
+      Math.max(0, Math.min(1, t)),
+    );
     return new Vector3().lerpVectors(from, to, easedT);
   }
 }

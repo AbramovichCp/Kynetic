@@ -1,5 +1,5 @@
-import { Vector2, Vector3 } from 'three';
-import type { LetterSlot, LetterVortexConfig } from './types';
+import { Vector2, Vector3 } from "three";
+import type { LetterSlot, LetterVortexConfig } from "./types";
 
 /**
  * Generates a dot-matrix grid of 3D positions that form the shape of each
@@ -37,7 +37,12 @@ export class WordLayoutBuilder {
     // Phase 1: Sample each letter individually and collect pixel positions
     const perLetterPixels: Vector2[][] = [];
     for (const ch of word) {
-      const pixels = this.sampleLetterPixels(ch, fontSize, gridRes, config.word.fontFamily);
+      const pixels = this.sampleLetterPixels(
+        ch,
+        fontSize,
+        gridRes,
+        config.word.fontFamily,
+      );
       perLetterPixels.push(pixels);
       // Compute the bounding width of this letter's pixels
       let maxX = 0;
@@ -101,16 +106,16 @@ export class WordLayoutBuilder {
     // Create offscreen canvas large enough for the character
     const padding = Math.ceil(fontSize * 0.15);
     const canvasSize = fontSize + padding * 2;
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = canvasSize;
     canvas.height = canvasSize;
 
-    const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
     ctx.clearRect(0, 0, canvasSize, canvasSize);
     ctx.font = `bold ${fontSize}px ${fontFamily}`;
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
     ctx.fillText(char, canvasSize / 2, canvasSize / 2);
 
     const imageData = ctx.getImageData(0, 0, canvasSize, canvasSize);

@@ -1,5 +1,5 @@
-import { Phase } from './types';
-import type { LoopCallbacks, LetterVortexConfig } from './types';
+import { Phase } from "./types";
+import type { LoopCallbacks, LetterVortexConfig } from "./types";
 
 /**
  * `requestAnimationFrame` wrapper with phase-management for the LetterVortex
@@ -110,7 +110,10 @@ export class AnimationLoop {
   private rebuildPhaseTable(config: LetterVortexConfig): void {
     const p = config.animation.phases;
     const total =
-      p.scatter.duration + p.assemble.duration + p.hold.duration + p.dissolve.duration;
+      p.scatter.duration +
+      p.assemble.duration +
+      p.hold.duration +
+      p.dissolve.duration;
 
     // Normalise durations so they fit into cycleDuration
     const scale = this.cycleDuration / total;

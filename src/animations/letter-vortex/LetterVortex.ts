@@ -5,18 +5,14 @@ import {
   Scene,
   Vector3,
   WebGLRenderer,
-} from 'three';
-import { LETTER_VORTEX_CONFIG } from './config';
-import { Phase } from './types';
-import type {
-  DeepPartial,
-  LetterVortexConfig,
-  QualityPreset,
-} from './types';
-import { AnimationLoop } from './AnimationLoop';
-import { ParticleSystem } from './ParticleSystem';
-import { WordLayoutBuilder } from './WordLayoutBuilder';
-import { VideoExporter } from './VideoExporter';
+} from "three";
+import { LETTER_VORTEX_CONFIG } from "./config";
+import { Phase } from "./types";
+import type { DeepPartial, LetterVortexConfig, QualityPreset } from "./types";
+import { AnimationLoop } from "./AnimationLoop";
+import { ParticleSystem } from "./ParticleSystem";
+import { WordLayoutBuilder } from "./WordLayoutBuilder";
+import { VideoExporter } from "./VideoExporter";
 
 /* ------------------------------------------------------------------ */
 /*  Deep-merge helper                                                 */
@@ -24,9 +20,9 @@ import { VideoExporter } from './VideoExporter';
 
 function deepMerge<T>(target: T, source: DeepPartial<T>): T {
   if (
-    typeof target !== 'object' ||
+    typeof target !== "object" ||
     target === null ||
-    typeof source !== 'object' ||
+    typeof source !== "object" ||
     source === null
   ) {
     return (source ?? target) as T;
@@ -42,10 +38,10 @@ function deepMerge<T>(target: T, source: DeepPartial<T>): T {
 
     const tgtVal = (target as Record<string, unknown>)[key];
     if (
-      typeof srcVal === 'object' &&
+      typeof srcVal === "object" &&
       srcVal !== null &&
       !Array.isArray(srcVal) &&
-      typeof tgtVal === 'object' &&
+      typeof tgtVal === "object" &&
       tgtVal !== null &&
       !Array.isArray(tgtVal)
     ) {
@@ -324,11 +320,7 @@ export class LetterVortex {
   /*  Private — per-frame update                                          */
   /* ==================================================================== */
 
-  private onFrame = (
-    delta: number,
-    phase: Phase,
-    progress: number,
-  ): void => {
+  private onFrame = (delta: number, phase: Phase, progress: number): void => {
     this.particleSystem.update(
       delta,
       phase,

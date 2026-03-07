@@ -1,7 +1,7 @@
-import { Vector3, type Camera, type Group } from 'three';
-import { Phase } from './types';
-import type { LetterVortexConfig } from './types';
-import { LetterParticle } from './LetterParticle';
+import { Vector3, type Camera, type Group } from "three";
+import { Phase } from "./types";
+import type { LetterVortexConfig } from "./types";
+import { LetterParticle } from "./LetterParticle";
 
 /**
  * Manages the full population of {@link LetterParticle} instances.
@@ -57,7 +57,11 @@ export class ParticleSystem {
    * character to the correct letter, sets their target position, and records
    * their current position as assembleOrigin.
    */
-  assignTargets(positions: Vector3[], chars: string[], config: LetterVortexConfig): void {
+  assignTargets(
+    positions: Vector3[],
+    chars: string[],
+    config: LetterVortexConfig,
+  ): void {
     this.targetIndices = [];
     const count = Math.min(positions.length, this.particles.length);
 
@@ -66,7 +70,8 @@ export class ParticleSystem {
       p.targetPosition = positions[i].clone();
       p.targetChar = chars[i];
       p.assembleOrigin = p.sprite.position.clone();
-      p.staggerOffset = (i * config.animation.phases.assemble.staggerDelay) /
+      p.staggerOffset =
+        (i * config.animation.phases.assemble.staggerDelay) /
         config.animation.phases.assemble.duration;
       p.staggerOffset = Math.min(p.staggerOffset, 0.7); // cap so last letters still have time
 
@@ -140,7 +145,11 @@ export class ParticleSystem {
 
         case Phase.Assemble:
           if (isTarget) {
-            p.updateAssemble(progress, config.animation.phases.assemble.speedCurve, config);
+            p.updateAssemble(
+              progress,
+              config.animation.phases.assemble.speedCurve,
+              config,
+            );
           } else {
             p.updateOrbit(this.elapsedTime, orbitCfg);
           }
@@ -214,7 +223,8 @@ export class ParticleSystem {
       case Phase.Dissolve:
         // Record current positions as dissolve origins
         for (const idx of this.targetIndices) {
-          this.particles[idx].dissolveOrigin = this.particles[idx].sprite.position.clone();
+          this.particles[idx].dissolveOrigin =
+            this.particles[idx].sprite.position.clone();
         }
         break;
       case Phase.Scatter:

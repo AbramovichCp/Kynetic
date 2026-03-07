@@ -1,5 +1,5 @@
-import { MathUtils, Vector3 } from 'three';
-import type { OrbitConfig } from './types';
+import { MathUtils, Vector3 } from "three";
+import type { OrbitConfig } from "./types";
 
 /**
  * Computes chaotic 3D orbit positions around a configurable axis.
@@ -57,7 +57,12 @@ export class OrbitBehavior {
     }
 
     // Add chaos
-    return OrbitBehavior.addChaos(pos, config.chaosIntensity, time, phaseOffset);
+    return OrbitBehavior.addChaos(
+      pos,
+      config.chaosIntensity,
+      time,
+      phaseOffset,
+    );
   }
 
   /**

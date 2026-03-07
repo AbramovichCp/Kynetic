@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { LetterVortex } from '@/animations/letter-vortex';
-import type { LetterVortexConfig } from '@/animations/letter-vortex';
+import { useEffect, useRef } from "react";
+import { LetterVortex } from "@/animations/letter-vortex";
+import type { LetterVortexConfig } from "@/animations/letter-vortex";
 
 /**
  * React hook that creates and manages a {@link LetterVortex} instance.
